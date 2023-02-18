@@ -5,9 +5,13 @@ import axios from 'axios';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { useField, useFormikContext } from "formik";
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default ({ url, name, axiosReqType, displayKeys, valueKeys, responseKeys }) => {
+
+    const [ field, meta, helpers ] = useField(name);
+    const { setFieldValue, values } = useFormikContext();
 
     let [search, setSearch] = useState("");
     let [response, setResponse] = useState([]);
@@ -49,7 +53,11 @@ export default ({ url, name, axiosReqType, displayKeys, valueKeys, responseKeys 
 
     useEffect( () => {
         submitNoPayload(); 
-    }, [search])
+    }, [search]);
+
+    useEffect( () => {
+        setFieldValue(name, selected);
+    }, [selected])
 
     return <div className="mb-3 block ">
 

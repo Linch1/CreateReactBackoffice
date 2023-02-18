@@ -1,6 +1,21 @@
 import Utils from "frontend/utils/Utils";
-import { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from 'axios';
+import { Formik } from 'formik';
+
+const FormikCtx = ({
+  ctx, formId, children, setFormikCtx
+}) => {
+
+    useEffect( () => {
+      console.log('INSIDE', ctx);
+      setFormikCtx(ctx);
+    }, []);
+
+    return  <form className="grid grid-cols-2 gap-4" id={formId} onSubmit={ctx.handleSubmit}>
+        {children}
+    </form>
+}
 
 export default ({
     children,
@@ -11,23 +26,23 @@ export default ({
     formId,
     formActionUrl,
     formReqType,
-    formResPath
+    formResPath,
+
+    initialValues,
+
+    setFormikCtx
 
 }) => {
 
     let [submitFormRes, setSubmitFormRes] = useState(null);
-    
-    
-    
-    async function submitForm( e ){
-        e.preventDefault();
-        var form = document.getElementById( formId );
-        var formData = new FormData(form);
+  
+    async function onSubmit(values, { setSubmitting }){
+      
         const config = {
             headers: hasFile ? { 'content-type': 'multipart/form-data' } : {},
             params: params ?  { ...params } : {}
         }
-        let res = await axios[formReqType](formActionUrl, formData, config)
+        let res = await axios[formReqType](formActionUrl, values, config)
         .then( res => {
           console.log( '[AXIOS RES]', res );
         })
@@ -41,12 +56,15 @@ export default ({
             setSubmitFormRes( responseNested );
         }
     }
-    
 
-
-    return <form className="grid grid-cols-2 gap-4" id={formId} onSubmit={submitForm}>
-        {children}
-    </form>
+    return  <Formik
+    initialValues={ initialValues ? initialValues : {} }
+    validate={()=>{}}
+    onSubmit={onSubmit}
+  >
+    {(ctx) => <FormikCtx formId={formId} setFormikCtx={setFormikCtx} ctx={ctx} > {children} </FormikCtx> }
+  </Formik>
+  
 
 
 }

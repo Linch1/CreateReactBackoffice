@@ -23,7 +23,7 @@ module.exports = new class{
             build: this._getInputNumberComponent.bind(this)
         },
         [ETypes.SELECT]: {
-            component: `<Select name={"${EPlaceholders.name}"} required={${EPlaceholders.required}} values={${EPlaceholders.values}} />`,
+            component: `<Select name={"${EPlaceholders.name}"} required={${EPlaceholders.required}} selectValues={${EPlaceholders.values}} />`,
             import: {
                 component: 'Select',
             },
@@ -65,7 +65,7 @@ module.exports = new class{
             build: this._getInputCheckboxComponent.bind(this)
         },
         [ETypes.SELECT_ARRAY]:{
-            component: `<SelectArray name={"${EPlaceholders.name}"} values={${EPlaceholders.values}} /> `,
+            component: `<SelectArray name={"${EPlaceholders.name}"} selectValues={${EPlaceholders.values}} /> `,
             import: {
                 component: 'SelectArray',
             },

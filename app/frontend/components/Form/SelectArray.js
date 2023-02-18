@@ -5,6 +5,7 @@ import axios from 'axios';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { useField, useFormikContext } from "formik";
 
 // eslint-disable-next-line import/no-anonymous-default-export
 function SelectArrayWithDynamicValues({ name, url, axiosReqType, displayKeys, valueKeys, responseKeys }) {
@@ -54,9 +55,12 @@ function SelectArrayWithDynamicValues({ name, url, axiosReqType, displayKeys, va
 }
 
 export default function SelectArray ({
-    values, /* { displayName: valueToSend }*/
+    selectValues, /* { displayName: valueToSend }*/
     name,
 }) {
+
+    const [ field, meta, helpers ] = useField(name);
+    const { setFieldValue, values } = useFormikContext();
     
     let selectLabel = 'Select Option';
     let [reversedValues, setReversedValues] = useState({});
@@ -74,22 +78,25 @@ export default function SelectArray ({
 
     useEffect( () => { 
         let rev = {};
-        for( let v in values) rev[values[v]] = v;
+        for( let v in selectValues) rev[selectValues[v]] = v;
         setReversedValues( rev );
     }, []);
     useEffect( () => {
         if(!Object.keys(reversedValues).length) return;
-        let allValues = Object.values(values);
+        let allValues = Object.values(selectValues);
         let newValues = allValues.filter( v => !includes(selected, v) );
-        console.log('New values: ', newValues )
         let options = {};
         for( let v of newValues ){
             options[reversedValues[v]] = v;
         }
-        console.log('New options: ', options );
-        console.log('Reversed: ', reversedValues)
         setUpdatedValues(options);
-    }, [selected, reversedValues])
+        setFieldValue(name, selected);
+    }, [selected, reversedValues]);
+
+    useEffect( () => {
+        console.log( values );
+        setSelected(values[name] ? values[name] : []);
+    }, [values])
 
     
 
@@ -101,6 +108,7 @@ export default function SelectArray ({
         />
         <Select
         id={name + '-search'}
+        defaultValue={selectLabel}
         onChange={ (e) => {
             console.log(e, e.target.value);
             let v = e.target.value;
@@ -108,7 +116,7 @@ export default function SelectArray ({
             e.target.value = selectLabel;
         }}
         >
-            <option selected>{selectLabel}</option>
+            <option >{selectLabel}</option>
             {Object.keys(updatedValues).map( (e,i) => <option value={updatedValues[e]} key={i} > {e} </option> )}
         </Select>
 
@@ -133,13 +141,5 @@ export default function SelectArray ({
             }
         </div>
 
-        {
-            selected && selected.length ?
-            selected.map( (e,i) => {
-                return <input key={i} type={"hidden"} name={`${name}[${i}]`} value={e} /> 
-            })
-            : <></>
-        }
-        
     </div>
 }

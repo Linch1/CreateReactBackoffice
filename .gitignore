@@ -7,6 +7,8 @@ app/.pnp
 
 .npm
 
+creator/routes/
+
 # testing
 /coverage
 

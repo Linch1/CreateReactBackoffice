@@ -80,11 +80,11 @@ module.exports = new class{
         
         let component = [ this.getReactCommonImports(), this.getReactComponentStart( routeName ) ];
         if( routeInfos.form ){
-            let form = this._buildComponentForm( routeName, routeInfos.form.path, routeInfos.form.body, routeInfos.form.hasFile, routeInfos.form.reqType, routeInfos.form.responseKeys, routeInfos.form.bodyAsParams);
+            let form = this._buildComponentForm( routeName, routeInfos.form.url, routeInfos.form.body, routeInfos.form.hasFile, routeInfos.form.reqType, routeInfos.form.responseKeys, routeInfos.form.bodyAsParams);
             this.execImports( component, form, this.resolveFormComponentPath.bind(this) );
         }
         if( routeInfos.list ){
-            let list = this._buildComponentList( routeInfos.list.url, routeInfos.list.propertiesMapping, routeInfos.list.reqType, routeInfos.form.responseKeys );
+            let list = this._buildComponentList( routeInfos.list.url, routeInfos.list.propertiesMapping, routeInfos.list.reqType, routeInfos.form.responseKeys, routeInfos.list.edit, routeInfos.list.delete, routeInfos.list.layout );
             this.execImports( component, list, this.resolveListComponentPath.bind(this) );
         }
         component.push( this.getReactComponentEnd( routeName ) );
@@ -110,7 +110,7 @@ module.exports = new class{
         return `
         export default () => {
             ${EPlaceholders.BEFORE_RETURN}
-            
+            const [formikCtx, setFormikCtx] = useState(null);
             ${EPlaceholders.BEFORE_RETURN}
             return(
                 <>
@@ -126,7 +126,7 @@ module.exports = new class{
     _buildComponentForm( formId, url, body, hasFile, reqType, responseKeys, bodyAsParams){
         let formParts = [];
         formParts.push( this._componentFromString(`<h1 className="mt-4">Form ${formId}</h1>`) );
-        formParts.push( this._componentFromString(`<Form formId="${formId}" formResPath="${responseKeys}" formReqType="${reqType}" formActionUrl="${url}" hasFile={${hasFile}}  >`, 'Form' ) );
+        formParts.push( this._componentFromString(`<Form formId="${formId}" formResPath="${responseKeys}" formReqType="${reqType}" formActionUrl="${url}" hasFile={${hasFile}}  setFormikCtx={setFormikCtx} >`, 'Form' ) );
         
         for( let paramName in body ){
             let paramInfos = body[paramName];
@@ -138,10 +138,10 @@ module.exports = new class{
         return formParts;
     }
 
-    _buildComponentList( url, propertiesMapping, reqType, responseKeys ){
+    _buildComponentList( url, propertiesMapping, reqType, responseKeys, editInfo, deleteInfo, layout ){
         let formParts = [];
         formParts.push( this._componentFromString(`<h1 className="mt-4">List</h1>`) );
-        formParts.push( this._componentFromString(`<List mapping={${JSON.stringify(propertiesMapping)}} formResPath="${responseKeys}" url="${url}" formReqType="${reqType}" />`, 'List' ) );
+        formParts.push( this._componentFromString(`<List layout={${layout}} deleteInfo={${JSON.stringify(deleteInfo)}} editInfo={${JSON.stringify(editInfo)}} mapping={${JSON.stringify(propertiesMapping)}} formResPath="${responseKeys}" url="${url}" formReqType="${reqType}" formikCtx={formikCtx} />`, 'List' ) );
         return formParts;
     }
 
