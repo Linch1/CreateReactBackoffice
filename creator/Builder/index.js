@@ -126,7 +126,7 @@ module.exports = new class{
     _buildComponentForm( formId, url, body, hasFile, reqType, responseKeys, bodyAsParams){
         let formParts = [];
         formParts.push( this._componentFromString(`<h1 className="mt-4">Form ${formId}</h1>`) );
-        formParts.push( this._componentFromString(`<Form formId="${formId}" formResPath="${responseKeys}" formReqType="${reqType}" formActionUrl="${url}" hasFile={${hasFile}} params={${JSON.stringify(body)}} >`, 'Form' ) );
+        formParts.push( this._componentFromString(`<Form formId="${formId}" formResPath="${responseKeys}" formReqType="${reqType}" formActionUrl="${url}" hasFile={${hasFile}}  >`, 'Form' ) );
         
         for( let paramName in body ){
             let paramInfos = body[paramName];

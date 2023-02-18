@@ -31,7 +31,7 @@ function walk(dir) {
 
 
 console.log('[CREATING] ' + projectName + '- TO FOLDER: ', PROJECT_PATH);
-if( fs.existsSync(SCHELETON_PATH) && false ){
+if( fs.existsSync(SCHELETON_PATH) ){
     console.log(`[FATAL ERROR] Folder named "${projectName}" already exists` );
     process.exit(1);
 } else {

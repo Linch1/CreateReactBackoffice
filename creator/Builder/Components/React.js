@@ -23,7 +23,7 @@ module.exports = new class{
             build: this._getInputNumberComponent.bind(this)
         },
         [ETypes.SELECT]: {
-            component: `<Select name={"${EPlaceholders.name}"} required={${EPlaceholders.required}} options={${EPlaceholders.options}} />`,
+            component: `<Select name={"${EPlaceholders.name}"} required={${EPlaceholders.required}} values={${EPlaceholders.values}} />`,
             import: {
                 component: 'Select',
             },
@@ -55,7 +55,21 @@ module.exports = new class{
             import: {
                 component: 'InputFile',
             },
-            build: this._getInputFileAreaComponent.bind(this)
+            build: this._getInputFileComponent.bind(this)
+        },
+        [ETypes.CHECKBOX]:{
+            component: `<InputCheckbox name={"${EPlaceholders.name}"} /> `,
+            import: {
+                component: 'InputCheckbox',
+            },
+            build: this._getInputCheckboxComponent.bind(this)
+        },
+        [ETypes.SELECT_ARRAY]:{
+            component: `<SelectArray name={"${EPlaceholders.name}"} values={${EPlaceholders.values}} /> `,
+            import: {
+                component: 'SelectArray',
+            },
+            build: this._getSelectArrayComponent.bind(this)
         }
     }
     getComponent( paramName, paramInfos ){
@@ -85,10 +99,26 @@ module.exports = new class{
             import: obj.import
         }
     }
-    _getInputFileAreaComponent( options ){
+    _getInputFileComponent( options ){
         let obj = this._paramTypeToComponent[ETypes.FILE];
         return {
             component: obj.component.replace( EPlaceholders.name, options.name ).replace( EPlaceholders.required, options.required || false  ),
+            import: obj.import
+        }
+    }
+    _getInputCheckboxComponent( options ){
+        let obj = this._paramTypeToComponent[ETypes.CHECKBOX];
+        return {
+            component: obj.component.replace( EPlaceholders.name, options.name ),
+            import: obj.import
+        }
+    }
+    _getSelectArrayComponent( options ){
+        let obj = this._paramTypeToComponent[ETypes.SELECT_ARRAY];
+        return {
+            component: obj.component
+            .replace( EPlaceholders.name, options.name )
+            .replace( EPlaceholders.values, JSON.stringify(options.values) ),
             import: obj.import
         }
     }
@@ -111,7 +141,7 @@ module.exports = new class{
             component: obj.component
             .replace( EPlaceholders.name, options.name )
             .replace( EPlaceholders.required, options.required || false )
-            .replace( EPlaceholders.options, JSON.stringify(options.values) ),
+            .replace( EPlaceholders.values, JSON.stringify(options.values) ),
             import: obj.import
         }
     }

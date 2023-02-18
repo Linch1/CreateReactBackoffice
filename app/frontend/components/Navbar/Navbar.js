@@ -40,6 +40,7 @@ export default function MainNavbar({ links }){
                       href={links[linkName]}
                       active={true}
                       className={styles['navbar-link']}
+                      key={i}
                     >
                       {linkName}
                     </Navbar.Link>

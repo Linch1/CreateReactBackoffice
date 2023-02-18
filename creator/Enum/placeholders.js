@@ -2,6 +2,7 @@ const EPlaceholders = {
     "name": "[CRB-NAME]",
     "required": "[CRB-REQUIRED]",
     "options": "[CRB-OPTIONS]",
+    "values": "[CRB-VALUES]",
 
     "url": "[CRB-URL]",
     "valueKeys": "[CRB-valueKeys]",
