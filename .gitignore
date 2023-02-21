@@ -1,13 +1,13 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-app/node_modules
-app/.pnp
+_scheleton/node_modules
+_scheleton/.pnp
 .pnp.js
 
 .npm
 
-creator/routes/
+routes/
 
 # testing
 /coverage
@@ -24,12 +24,12 @@ creator/routes/
 *.pem
 
 # debug
-app/npm-debug.log*
-app/yarn-debug.log*
-app/yarn-error.log*
-app/.pnpm-debug.log*
-app/pnpm-lock.yaml
-app/package-lock.json
+_scheleton/npm-debug.log*
+_scheleton/yarn-debug.log*
+_scheleton/yarn-error.log*
+_scheleton/.pnpm-debug.log*
+_scheleton/pnpm-lock.yaml
+_scheleton/package-lock.json
 
 # local env files
 .env*.local
