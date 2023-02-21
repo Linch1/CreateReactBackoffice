@@ -4,6 +4,7 @@ import Pagination from "./Pagination"
 import Utils from "frontend/utils/Utils";
 import axios from 'axios';
 import { useFormikContext } from "formik";
+import useComponent from "../hooks/useComponent";
 
 export default ({
     mapping, // { headName: propertyPath, ... }
@@ -12,11 +13,11 @@ export default ({
     formReqType,
     formResPath,
 
-    layout,
-
     editInfo,
     deleteInfo,
     formikCtx,
+
+    pageIdentifier,
 
     setOverwriteFormInfo
 }) => {
@@ -115,8 +116,8 @@ export default ({
                 return (
                 <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={i} >
                     {
-                        layout ? 
-                        layout(obj)
+                        tableRowLayout ? 
+                        useComponent(pageIdentifier, 'LIST', 'TABLE_ROW', { obj })
                         :
                         Object.values(mapping).map( (e,i) => {
                             return <Table.Cell className={"whitespace-nowrap font-medium text-gray-900 dark:text-white "} key={i}>

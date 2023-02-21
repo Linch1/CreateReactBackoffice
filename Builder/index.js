@@ -4,14 +4,21 @@ const EAxiosRequestsType = require('../Enum/axiosRequestTypes');
 const ETypes = require('../Enum/types');
 const EPlaceholders = require('../Enum/placeholders');
 const fs = require('fs');
+const Utils = require('../Utils/Utils');
 
 module.exports = new class{
 
-    OUTPUT_DIR = 'frontend/components/Routes';
-    COMPONENTS_DIR = "@/Components/";
-    FORM_COMPONENTS_DIR = "@/Components/Form";
-    LIST_COMPONENTS_DIR = "@/Components/List";
-    NAVBAR_COMPONENTS_DIR = "@/Components/Navbar";
+    
+    COMPONENTS_DIR = "@/Components/CreateBackoffice/";
+    
+    ROUTES_COMPONENTS_DIR = path.join( this.COMPONENTS_DIR, 'Routes' );
+
+    OUTPUT_DIR = 'frontend/components/CreateBackoffice/Routes';
+
+    FORM_COMPONENTS_DIR = path.join( this.COMPONENTS_DIR, 'Form' );
+    LIST_COMPONENTS_DIR = path.join( this.COMPONENTS_DIR, 'List' );
+    NAVBAR_COMPONENTS_DIR = path.join( this.COMPONENTS_DIR, 'Navbar' );
+    
     PAGES_DIR = 'pages';
     PROJECT_PATH = null;
 
@@ -27,7 +34,12 @@ module.exports = new class{
     }
 
 
-    writeComponent( routePath, componentText ){
+    writeComponent( routePath, componentText, force ){
+
+        if( fs.existsSync(routePath) ) {
+            return console.log(`[ exists ]`, routePath);
+        }
+
         let routeDir = path.join( this.PROJECT_PATH );
         let folders = [ this.OUTPUT_DIR, ...routePath.split('/')]
         for( let folder of folders ){
@@ -42,19 +54,22 @@ module.exports = new class{
             componentText
         )
     }
-    writePage( routePath ){
-        let routeDir = path.join( this.PROJECT_PATH );
-        let folders = [ this.PAGES_DIR, ...routePath.split('/')]
-        for( let folder of folders ){
-            routeDir = path.join( routeDir, folder )
-            if( !fs.existsSync( routeDir ) ){
-                fs.mkdirSync( routeDir )
-            }
-        }
+    writePage( routePath, force ){
 
-        let componentImport = path.join( '@/Components/Routes', routePath );
+        let splittedRoute = routePath.split('/');
+
+        // creates the page file
+        let folders = [ this.PAGES_DIR, ...splittedRoute];
+        Utils.makeDirRecursive(this.PROJECT_PATH, folders);
+
+        let componentImport = path.join( this.ROUTES_COMPONENTS_DIR, routePath );
+    
+        let pagePath = path.join( this.PROJECT_PATH, this.PAGES_DIR, routePath, 'index.js' );
+
+        if( fs.existsSync(pagePath) ) return console.log(`[!][ exists ]`, pagePath); // avoid overwriting page if present
+
         fs.writeFileSync(
-            path.join( routeDir, 'index.js' ),
+            pagePath,
             `
             import Component from "${componentImport}";
             export default function PageComponent() {
@@ -84,7 +99,7 @@ module.exports = new class{
             this.execImports( component, form, this.resolveFormComponentPath.bind(this) );
         }
         if( routeInfos.list ){
-            let list = this._buildComponentList( routeInfos.list.url, routeInfos.list.propertiesMapping, routeInfos.list.reqType, routeInfos.form.responseKeys, routeInfos.list.edit, routeInfos.list.delete, routeInfos.list.layout );
+            let list = this._buildComponentList( routeInfos.path, routeInfos.list.url, routeInfos.list.propertiesMapping, routeInfos.list.reqType, routeInfos.form.responseKeys, routeInfos.list.edit, routeInfos.list.delete );
             this.execImports( component, list, this.resolveListComponentPath.bind(this) );
         }
         component.push( this.getReactComponentEnd( routeName ) );
@@ -139,10 +154,10 @@ module.exports = new class{
         return formParts;
     }
 
-    _buildComponentList( url, propertiesMapping, reqType, responseKeys, editInfo, deleteInfo, layout ){
+    _buildComponentList( routePath, url, propertiesMapping, reqType, responseKeys, editInfo, deleteInfo ){
         let formParts = [];
         formParts.push( this._componentFromString(`<h1 className="mt-4">List</h1>`) );
-        formParts.push( this._componentFromString(`<List layout={${layout}} deleteInfo={${JSON.stringify(deleteInfo)}} editInfo={${JSON.stringify(editInfo)}} mapping={${JSON.stringify(propertiesMapping)}} formResPath="${responseKeys}" url="${url}" formReqType="${reqType}" formikCtx={formikCtx} setOverwriteFormInfo={setOverwriteFormInfo} />`, 'List' ) );
+        formParts.push( this._componentFromString(`<List pageIdentifier={"${routePath}"} deleteInfo={${JSON.stringify(deleteInfo)}} editInfo={${JSON.stringify(editInfo)}} mapping={${JSON.stringify(propertiesMapping)}} formResPath="${responseKeys}" url="${url}" formReqType="${reqType}" formikCtx={formikCtx} setOverwriteFormInfo={setOverwriteFormInfo} />`, 'List' ) );
         return formParts;
     }
 
