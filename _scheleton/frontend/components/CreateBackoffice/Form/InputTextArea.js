@@ -1,6 +1,6 @@
 import { Textarea, Label } from "flowbite-react"
 import { useField, useFormikContext } from "formik";
-import Utils from "frontend/utils/Utils";
+import Utils from "../utils/Utils";
 import { useEffect } from "react";
 
 // eslint-disable-next-line import/no-anonymous-default-export

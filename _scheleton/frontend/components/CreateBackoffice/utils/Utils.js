@@ -21,4 +21,10 @@ export default new class {
             nested = nested[key]
         }
     }
+    isAsync( fx ){
+        const AsyncFunction = (async () => {}).constructor;
+        return fx instanceof AsyncFunction === true
+    }
+
+    
 }

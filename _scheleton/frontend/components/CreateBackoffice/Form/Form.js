@@ -1,7 +1,9 @@
-import Utils from "frontend/utils/Utils";
+import Utils from "../utils/Utils";
 import React, { useEffect, useRef, useState } from "react";
 import axios from 'axios';
 import { Formik } from 'formik';
+import Customizer from "../Customizer"; 
+import EC from "../enum/EC";
 
 const FormikCtx = ({
   ctx, formId, children, setFormikCtx
@@ -18,48 +20,54 @@ const FormikCtx = ({
 }
 
 export default ({
-    children,
+  pageIdentifier,
 
-    hasFile,
-    params,
+  children,
 
-    formId,
-    formActionUrl,
-    formReqType,
-    formResPath,
+  hasFile,
+  params,
 
-    initialValues,
+  formId,
+  formActionUrl,
+  formReqType,
+  formResPath,
 
-    setFormikCtx,
-    overwriteFormInfo
+  initialValues,
+
+  setFormikCtx,
+  overwriteFormInfo,
 
 }) => {
 
     let [submitFormRes, setSubmitFormRes] = useState(null);
-  
+
     async function onSubmit(values, { setSubmitting }){
-      
-        const config = {
-            headers: hasFile ? { 'content-type': 'multipart/form-data' } : {},
-            params: params ?  { ...params } : {}
-        }
-        let res = await axios[overwriteFormInfo.formReqType ? overwriteFormInfo.formReqType : formReqType](
-          overwriteFormInfo.formActionUrl ? overwriteFormInfo.formActionUrl : formActionUrl, 
-          values, 
-          config
-        )
-        .then( res => {
-          console.log( '[AXIOS RES]', res );
-        })
-        .catch( err => {
-          console.log( '[AXIOS ERR]', err );
-        });
-        if(!res) return;
         
-        let responseNested = Utils.getObjectKey(res.data, formResPath ? formResPath.split('.') : []);
-        if( res.data && responseNested ){
-            setSubmitFormRes( responseNested );
-        }
+      if( 
+        !( await Customizer.callCustomizedFunction(pageIdentifier, EC.FUNCTIONS.FORM.ON_SUBMIT, [values, { setSubmitting }] ) ) 
+      ) return;
+
+      const config = {
+          headers: hasFile ? { 'content-type': 'multipart/form-data' } : {},
+          params: params ?  { ...params } : {}
+      }
+      let res = await axios[overwriteFormInfo.formReqType ? overwriteFormInfo.formReqType : formReqType](
+        overwriteFormInfo.formActionUrl ? overwriteFormInfo.formActionUrl : formActionUrl, 
+        values, 
+        config
+      )
+      .then( res => {
+        console.log( '[AXIOS RES]', res );
+      })
+      .catch( err => {
+        console.log( '[AXIOS ERR]', err );
+      });
+      if(!res) return;
+      
+      let responseNested = Utils.getObjectKey(res.data, formResPath ? formResPath.split('.') : []);
+      if( res.data && responseNested ){
+          setSubmitFormRes( responseNested );
+      }
     }
 
     return  <Formik

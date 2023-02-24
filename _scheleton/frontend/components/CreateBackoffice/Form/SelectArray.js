@@ -1,5 +1,5 @@
 import { Select, Label } from "flowbite-react"
-import Utils from "frontend/utils/Utils";
+import Utils from "../utils/Utils";
 import { useEffect, useRef, useState } from "react";
 import axios from 'axios';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

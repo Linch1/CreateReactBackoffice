@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react"
 import { Table } from "flowbite-react"
 import Pagination from "./Pagination"
-import Utils from "frontend/utils/Utils";
+import Utils from "../utils/Utils";
 import axios from 'axios';
 import { useFormikContext } from "formik";
-import useComponent from "../hooks/useComponent";
+import useCustomComponent from "../hooks/useCustomComponent";
+import EC from "../enum/EC";
 
 export default ({
+
+    pageIdentifier,
+
     mapping, // { headName: propertyPath, ... }
     url,
     params,
@@ -16,8 +20,6 @@ export default ({
     editInfo,
     deleteInfo,
     formikCtx,
-
-    pageIdentifier,
 
     setOverwriteFormInfo
 }) => {
@@ -112,12 +114,12 @@ export default ({
         <Table.Body className="divide-y">
             {
             submitNoPayloadRes.map( (obj,i) => {
-                
+                let c =  useCustomComponent(pageIdentifier, EC.COMPONENTS.LIST.TABLE_ROW, { obj }) 
                 return (
                 <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={i} >
                     {
-                        tableRowLayout ? 
-                        useComponent(pageIdentifier, 'LIST', 'TABLE_ROW', { obj })
+                        c? 
+                        c
                         :
                         Object.values(mapping).map( (e,i) => {
                             return <Table.Cell className={"whitespace-nowrap font-medium text-gray-900 dark:text-white "} key={i}>
