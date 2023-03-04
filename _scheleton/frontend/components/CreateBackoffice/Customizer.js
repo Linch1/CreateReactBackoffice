@@ -1,3 +1,5 @@
+import Utils from "./utils/Utils";
+
 export default new class Customizer {
     constructor() {
         this.components = {};

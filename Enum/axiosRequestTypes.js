@@ -1,6 +1,7 @@
 const EAxiosRequestsType = {
     "GET": "get",
     "POST": "post",
-    "PUT": "put"
+    "PUT": "put",
+    "DELETE": "delete"
 }
 module.exports = EAxiosRequestsType;

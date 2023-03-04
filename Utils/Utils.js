@@ -7,9 +7,11 @@ module.exports = new class {
     }
     dirWalk(dir) {
         var results = [];
+        console.log( dir )
         var list = fs.readdirSync(dir);
         list.forEach(function(file) {
             file = dir + '/' + file;
+            console.log( file )
             var stat = fs.statSync(file);
             if (stat && stat.isDirectory()) { 
                 /* Recurse into a subdirectory */
@@ -23,6 +25,8 @@ module.exports = new class {
     }
     makeDirRecursive( root, folders ){
         let routeDir = root;
+        if( typeof folders == 'string' ) folders = folders.split('/');
+
         for( let folder of folders ){
             routeDir = path.join( routeDir, folder )
             if( !fs.existsSync( routeDir ) ){

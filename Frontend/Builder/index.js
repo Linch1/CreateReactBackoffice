@@ -1,11 +1,11 @@
 const ReactComponents = require('./Components/React');
 const path = require('path');
-const EAxiosRequestsType = require('../Enum/axiosRequestTypes');
-const ETypes = require('../Enum/types');
-const EPlaceholders = require('../Enum/placeholders');
+const EAxiosRequestsType = require('../../Enum/axiosRequestTypes');
+const ETypes = require('../../Enum/types');
+const EPlaceholders = require('../../Enum/placeholders');
 const fs = require('fs');
-const Utils = require('../Utils/Utils');
-const EC = require('../Enum/EC');
+const Utils = require('../../Utils/Utils');
+const EC = require('../../Enum/EC');
 
 module.exports = new class{
 
@@ -135,12 +135,12 @@ export default function PageComponent() {
         let customizations = { callbacks: [], components: []};
         let component = [ this.getReactCommonImports(), this.getReactComponentStart( routeName ) ];
         if( routeInfos.form ){
-            let { form } = this._buildComponentForm( routeName, routeInfos.form.url, routeInfos.form.body, routeInfos.form.hasFile, routeInfos.form.reqType, routeInfos.form.responseKeys, routeInfos.form.bodyAsParams, customizations);
+            let { form } = this._buildComponentForm( routeName, routeInfos.form.url, routeInfos.form.body, routeInfos.form.hasFile, routeInfos.form.reqType, routeInfos.form.responseKeys, routeInfos.form.bodyAsParams, routeInfos.form.query, customizations);
             this.execImports( component, form, this.resolveFormComponentPath.bind(this) );
             customizations.callbacks.push(EC.FUNCTIONS.FORM.ON_SUBMIT);
         }
         if( routeInfos.list ){
-            let list = this._buildComponentList( routeInfos.path, routeInfos.list.url, routeInfos.list.propertiesMapping, routeInfos.list.reqType, routeInfos.form.responseKeys, routeInfos.list.edit, routeInfos.list.delete, customizations );
+            let list = this._buildComponentList( routeInfos.path, routeInfos.list.url, routeInfos.list.propertiesMapping, routeInfos.list.reqType, routeInfos.list.responseKeys, routeInfos.list.edit, routeInfos.list.delete, customizations );
             this.execImports( component, list, this.resolveListComponentPath.bind(this) );
             customizations.components.push(EC.COMPONENTS.LIST.TABLE_ROW);
         }
@@ -162,6 +162,8 @@ export default function PageComponent() {
     getReactCommonImports(){
         return [
             `import { useState, useEffect, useRef } from "react"`, 
+            `import CustomToast from "@/Components/CreateBackoffice/General/CustomToast"`,
+            `import { ToastContextProvider } from "@/Components/CreateBackoffice/context/ToastContext"`,
             `import Navbar from "${path.join(this.NAVBAR_COMPONENTS_DIR, 'Navbar')}"`
         ].join(";\n");
     }
@@ -174,20 +176,21 @@ export default function PageComponent() {
             const [overwriteFormInfo, setOverwriteFormInfo] = useState({ formActionUrl: '', formReqType: ''});
             ${EPlaceholders.BEFORE_RETURN}
             return(
-                <>
+                <ToastContextProvider>
+                <CustomToast />
                 ${EPlaceholders.NAVBAR}
         `;
     }
     getReactComponentEnd( componentName ){
-        return '</>)\n}';
+        return '</ToastContextProvider>)\n}';
     }
 
 
 
-    _buildComponentForm( formId, url, body, hasFile, reqType, responseKeys, bodyAsParams, customizations){
+    _buildComponentForm( formId, url, body, hasFile, reqType, responseKeys, bodyAsParams, queryParams, customizations){
         let formParts = [];
         formParts.push( this._componentFromString(`<h1 className="mt-4">Form ${formId}</h1>`) );
-        formParts.push( this._componentFromString(`<Form pageIdentifier={IDENTIFIER} formId="${formId}" overwriteFormInfo={overwriteFormInfo} formResPath="${responseKeys}" formReqType="${reqType}" formActionUrl="${url}" hasFile={${hasFile}}  setFormikCtx={setFormikCtx} >`, 'Form' ) );
+        formParts.push( this._componentFromString(`<Form pageIdentifier={IDENTIFIER} formId="${formId}" overwriteFormInfo={overwriteFormInfo} formResPath="${responseKeys}" formReqType="${reqType}" formActionUrl="${url}" hasFile={${hasFile}} queryActionUrl={${JSON.stringify(queryParams)}} setFormikCtx={setFormikCtx} >`, 'Form' ) );
         
         for( let paramName in body ){
             let paramInfos = body[paramName];

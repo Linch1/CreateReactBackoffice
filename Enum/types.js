@@ -7,6 +7,6 @@ const ETypes = {
     SUBMIT_BUTTON: 'submit_button',
     TEXTAREA: 'textarea',
     FILE: 'file',
-    CHECKBOX: 'checkbox',
+    CHECKBOX: 'boolean',
 }
 module.exports = ETypes;

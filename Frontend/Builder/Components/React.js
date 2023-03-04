@@ -1,7 +1,7 @@
-const ETypes = require('../../Enum/types.js');
-const EAxiosRequestsType = require('../../Enum/axiosRequestTypes.js');
-const EPlaceholders = require('../../Enum/placeholders.js');
-const Utils = require('../../Utils/Utils.js');
+const ETypes = require('../../../Enum/types.js');
+const EAxiosRequestsType = require('../../../Enum/axiosRequestTypes.js');
+const EPlaceholders = require('../../../Enum/placeholders.js');
+const Utils = require('../../../Utils/Utils.js');
 
 module.exports = new class{
 

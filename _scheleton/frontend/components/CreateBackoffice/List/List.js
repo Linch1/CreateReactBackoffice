@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useFormikContext } from "formik";
 import useCustomComponent from "../hooks/useCustomComponent";
 import EC from "../enum/EC";
+import path from "path";
 
 export default ({
 
@@ -76,10 +77,25 @@ export default ({
 
     function populateEditForm( obj, i ){
         formikCtx.setValues( obj );
-        setOverwriteFormInfo({ 
+        let overwrite = { 
             formActionUrl: editInfo.url,
             formReqType: 'put'
-        });
+        };
+        if( editInfo.query ){
+            overwrite.query = {};
+            for( let key of editInfo.query ){
+                overwrite.query[key] = Utils.getObjectKey(obj, key);
+            }
+        }
+        if( editInfo.params ){
+            overwrite.params = {};
+            let paramsPath = '';
+            for( let key of editInfo.params ){
+                paramsPath = path.join(paramsPath, Utils.getObjectKey(obj, key));
+            }
+            overwrite.formActionUrl = overwrite.formActionUrl + '/' + paramsPath;
+        }
+        setOverwriteFormInfo(overwrite);
         setEditing(i);
     }
     function cancelEditing(){
@@ -113,7 +129,7 @@ export default ({
         </Table.Head>
         <Table.Body className="divide-y">
             {
-            submitNoPayloadRes.map( (obj,i) => {
+            submitNoPayloadRes && Array.isArray(submitNoPayloadRes) && submitNoPayloadRes.map( (obj,i) => {
                 let c =  useCustomComponent(pageIdentifier, EC.COMPONENTS.LIST.TABLE_ROW, { obj }) 
                 return (
                 <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={i} >
